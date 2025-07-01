@@ -4,7 +4,7 @@ pub mod error;
 mod logging;
 mod models;
 mod schema;
-// mod shipmondo;
+pub mod shipmondo;
 
 fn main() {
     if let Err(error) = commands::run_cli() {

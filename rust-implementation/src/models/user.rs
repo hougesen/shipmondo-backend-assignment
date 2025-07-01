@@ -19,6 +19,8 @@ pub struct UserModel {
     pub production: bool,
 
     pub is_deleted: bool,
+
+    pub balance: f32,
 }
 
 #[inline]

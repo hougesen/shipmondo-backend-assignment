@@ -9,4 +9,7 @@ run = [
 ]
 
 [tasks.db]
-run = ["cd rust-implementation && diesel migration redo"]
+run = [
+  "cd rust-implementation && diesel migration run",
+  "cd rust-implementation && diesel migration redo",
+]

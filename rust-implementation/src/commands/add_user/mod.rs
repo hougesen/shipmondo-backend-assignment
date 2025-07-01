@@ -3,6 +3,7 @@ use diesel::{RunQueryDsl, SelectableHelper, SqliteConnection, prelude::Insertabl
 use crate::error::CliError;
 use crate::logging::print_user_has_been_inserted;
 use crate::models::user::UserModel;
+use crate::shipmondo::get_balance;
 
 #[derive(Insertable)]
 #[diesel(table_name  = crate::schema::users )]
@@ -12,6 +13,9 @@ struct NewUser {
     password: String,
 
     production: bool,
+
+    // TODO: get balance when setting up account
+    balance: f32,
 }
 
 impl NewUser {
@@ -48,15 +52,19 @@ fn prompt_production() -> Result<bool, inquire::InquireError> {
 }
 
 #[inline]
-fn prompt_new_user() -> Result<NewUser, inquire::InquireError> {
+fn prompt_new_user() -> Result<NewUser, CliError> {
     let username = prompt_auth_user()?;
     let password = prompt_auth_key()?;
     let production = prompt_production()?;
+    println!("before");
+    let balance = get_balance(&username, &password, production)?;
+    println!("after");
 
     Ok(NewUser {
         username,
         password,
         production,
+        balance: balance.amount,
     })
 }
 
