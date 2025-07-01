@@ -54,11 +54,11 @@ pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
             })
             .execute(conn)?;
 
-        for package_id in package_ids {
+        for package_id in &package_ids {
             diesel::insert_into(crate::schema::shipment_packages::table)
                 .values(ShipmentPackageModel {
                     shipment_id: shipment.id,
-                    package_id,
+                    package_id: package_id.to_string(),
                 })
                 .execute(conn)?;
         }

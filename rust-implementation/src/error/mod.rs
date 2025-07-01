@@ -1,4 +1,4 @@
-use std::num::ParseFloatError;
+use core::num::ParseFloatError;
 
 #[derive(Debug)]
 pub enum CliError {

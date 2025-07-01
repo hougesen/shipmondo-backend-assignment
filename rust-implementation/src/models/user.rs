@@ -18,6 +18,7 @@ pub struct UserModel {
 
     pub production: bool,
 
+    #[expect(dead_code)]
     pub is_deleted: bool,
 
     pub balance: f32,

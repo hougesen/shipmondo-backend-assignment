@@ -1,4 +1,4 @@
-use crate::error::CliError;
+use crate::{error::CliError, models::user::UserModel};
 
 #[inline]
 pub fn log_error(error: &CliError) {
@@ -26,4 +26,9 @@ pub fn print_order_created(
         "Shipment has been created\nShipment id: {shipment_id}\nPackage ids: {}\nPrice: {price}\nNew account balance: {new_balance}",
         package_ids.join(", "),
     );
+}
+
+#[inline]
+pub fn print_user_balance(user: &UserModel) {
+    println!("The balance of that account is: {}", user.balance);
 }

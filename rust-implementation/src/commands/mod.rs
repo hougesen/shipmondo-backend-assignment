@@ -3,7 +3,8 @@ use clap::{Parser, Subcommand};
 use crate::{database::connect_to_database, error::CliError};
 
 mod add_user;
-mod create_order;
+mod balance;
+mod create_shipment;
 mod remove_user;
 
 const HELP_TEMPLATE: &str = "\
@@ -23,7 +24,9 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum CliCommand {
-    CreateOrder,
+    CreateShipment,
+
+    Balance,
 
     AddUser,
 
@@ -34,7 +37,8 @@ pub fn run_cli() -> Result<(), CliError> {
     let mut database = connect_to_database()?;
 
     match Cli::parse().command {
-        CliCommand::CreateOrder => create_order::command(&mut database),
+        CliCommand::CreateShipment => create_shipment::command(&mut database),
+        CliCommand::Balance => balance::command(&mut database),
         CliCommand::AddUser => add_user::command(&mut database),
         CliCommand::RemoveUser => remove_user::command(&mut database),
     }
