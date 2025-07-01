@@ -1,5 +1,6 @@
 mod commands;
 pub mod database;
+pub mod error;
 mod logging;
 mod models;
 mod schema;
@@ -7,6 +8,8 @@ mod schema;
 
 fn main() {
     if let Err(error) = commands::run_cli() {
-        eprintln!("{error}");
+        logging::log_error(&error);
+
+        std::process::exit(1);
     }
 }

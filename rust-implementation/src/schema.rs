@@ -6,5 +6,6 @@ diesel::table! {
         username -> Text,
         password -> Text,
         production -> Bool,
+        is_deleted -> Bool,
     }
 }

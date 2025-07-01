@@ -1,10 +1,8 @@
 use diesel::{RunQueryDsl, SelectableHelper, SqliteConnection, prelude::Insertable};
 
-use crate::commands::add_user::error::AddUserError;
+use crate::error::CliError;
 use crate::logging::print_user_has_been_inserted;
 use crate::models::user::UserModel;
-
-pub mod error;
 
 #[derive(Insertable)]
 #[diesel(table_name  = crate::schema::users )]
@@ -63,11 +61,10 @@ fn prompt_new_user() -> Result<NewUser, inquire::InquireError> {
 }
 
 #[inline]
-pub fn command(database: &mut SqliteConnection) -> Result<(), AddUserError> {
-    let user = prompt_new_user().map_err(AddUserError::Inquire)?;
+pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
+    let user = prompt_new_user()?;
 
-    user.insert_new_user(database)
-        .map_err(AddUserError::InsertNewUser)?;
+    user.insert_new_user(database)?;
 
     print_user_has_been_inserted();
 

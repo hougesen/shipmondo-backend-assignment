@@ -1,12 +1,8 @@
 use clap::{Parser, Subcommand};
 
-use crate::{
-    commands::{add_user::error::AddUserError, error::CliError},
-    database::connect_to_database,
-};
+use crate::{database::connect_to_database, error::CliError};
 
 mod add_user;
-mod error;
 mod remove_user;
 
 const HELP_TEMPLATE: &str = "\
@@ -32,14 +28,10 @@ pub enum CliCommand {
 }
 
 pub fn run_cli() -> Result<(), CliError> {
-    match Cli::parse().command {
-        CliCommand::AddUser => {
-            let mut database = connect_to_database()
-                .map_err(AddUserError::DatabaseConnection)
-                .map_err(CliError::AddUser)?;
+    let mut database = connect_to_database()?;
 
-            add_user::command(&mut database).map_err(CliError::AddUser)
-        }
-        CliCommand::RemoveUser => remove_user::command().map_err(CliError::RemoveUser),
+    match Cli::parse().command {
+        CliCommand::AddUser => add_user::command(&mut database),
+        CliCommand::RemoveUser => remove_user::command(&mut database),
     }
 }

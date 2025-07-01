@@ -1,4 +1,10 @@
-use diesel::{Selectable, prelude::Queryable};
+use diesel::{
+    ExpressionMethods, RunQueryDsl, Selectable, SelectableHelper, SqliteConnection,
+    prelude::Queryable,
+    query_dsl::methods::{FilterDsl, SelectDsl},
+};
+
+use crate::schema;
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = crate::schema::users)]
@@ -11,4 +17,21 @@ pub struct UserModel {
     pub password: String,
 
     pub production: bool,
+
+    pub is_deleted: bool,
+}
+
+#[inline]
+pub fn select_all_users(
+    database: &mut SqliteConnection,
+    include_deleted: bool,
+) -> Result<Vec<UserModel>, diesel::result::Error> {
+    let q = schema::users::dsl::users.select(UserModel::as_select());
+
+    if include_deleted {
+        q.get_results(database)
+    } else {
+        q.filter(schema::users::is_deleted.eq(false))
+            .get_results(database)
+    }
 }
