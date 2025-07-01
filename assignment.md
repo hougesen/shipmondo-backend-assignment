@@ -9,6 +9,7 @@ It must securely authenticate with the keys provided by your contact at Shipmond
 It must be able to create a simple shipment. It is fine that the body of the shipment request is hardcoded.
 
 It must have a local database that keeps track of:
+
 - Your account balance.
 - Package number and ID of the shipment.
 

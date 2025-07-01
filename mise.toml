@@ -1,0 +1,12 @@
+[tasks.format]
+run = [
+  "sqlfluff fix -d sqlite",
+  "mdsf format .",
+  "tombi format",
+  "mise fmt",
+  "npx prettier --write --cache .",
+  "cd rust-implementation && cargo fmt",
+]
+
+[tasks.db]
+run = ["cd rust-implementation && diesel migration redo"]
