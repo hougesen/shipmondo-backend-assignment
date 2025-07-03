@@ -5,6 +5,5 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     production BOOLEAN NOT NULL,
     -- NOTE: we could use a timestamp which would provide more information
-    is_deleted BOOLEAN NOT NULL DEFAULT 0,
-    balance REAL NOT NULL DEFAULT 0
+    is_deleted BOOLEAN NOT NULL DEFAULT 0
 );

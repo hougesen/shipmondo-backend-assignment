@@ -1,16 +1,16 @@
-use diesel::{
-    Connection, ExpressionMethods, RunQueryDsl, SqliteConnection, query_dsl::methods::FilterDsl,
-};
+use diesel::{Connection, RunQueryDsl, SqliteConnection};
 
 use crate::{
     error::CliError,
     logging::print_order_created,
     models::{
         shipment_packages::ShipmentPackageModel, shipments::ShipmentModel, user::select_all_users,
+        user_balances::UserBalance,
     },
-    shipmondo::create_shipment,
+    shipmondo::{create_shipment, get_balance},
 };
 
+#[inline]
 pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
     let users = select_all_users(database, false)?;
 
@@ -27,9 +27,11 @@ pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
         selected_user.production,
     )?;
 
-    let price = shipment.price.parse::<f32>()?;
-
-    let new_balance = selected_user.balance - price;
+    let new_balance = get_balance(
+        &selected_user.username,
+        &selected_user.password,
+        selected_user.production,
+    )?;
 
     let mut package_ids = std::collections::HashSet::new();
 
@@ -50,7 +52,7 @@ pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
             .values(ShipmentModel {
                 id: shipment.id,
                 user_id: selected_user.id,
-                price: shipment.price,
+                price: shipment.price.clone(),
             })
             .execute(conn)?;
 
@@ -63,11 +65,13 @@ pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
                 .execute(conn)?;
         }
 
-        diesel::update(
-            crate::schema::users::table.filter(crate::schema::users::id.eq(selected_user.id)),
-        )
-        .set(crate::schema::users::balance.eq(new_balance))
-        .execute(conn)?;
+        diesel::insert_into(crate::schema::user_balances::table)
+            .values(UserBalance {
+                user_id: selected_user.id,
+                amount: new_balance.amount,
+                currency_code: new_balance.currency_code.clone(),
+            })
+            .execute(conn)?;
 
         diesel::result::QueryResult::Ok(())
     })?;
@@ -75,8 +79,8 @@ pub fn command(database: &mut SqliteConnection) -> Result<(), CliError> {
     print_order_created(
         shipment.id,
         package_ids.into_iter().collect::<Vec<_>>(),
-        price,
-        new_balance,
+        &shipment.price,
+        &new_balance,
     );
 
     Ok(())

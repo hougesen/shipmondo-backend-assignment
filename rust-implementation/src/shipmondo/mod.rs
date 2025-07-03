@@ -72,9 +72,7 @@ pub fn create_shipment(
 pub struct GetBalanceResponseBody {
     pub amount: f32,
 
-    /// NOTE: this should most likely be saved somewhere, but it doesn't really matter in our
-    /// usecase since we know it muse be DKK
-    pub currency_code: Option<String>,
+    pub currency_code: String,
 }
 
 #[inline]

@@ -1,5 +1,3 @@
-use core::num::ParseFloatError;
-
 #[derive(Debug)]
 pub enum CliError {
     Database(diesel::result::Error),
@@ -9,7 +7,6 @@ pub enum CliError {
     Reqwest(reqwest::Error),
     HeaderValue(reqwest::header::InvalidHeaderValue),
     SerdeJson(serde_json::Error),
-    ParseFloat(ParseFloatError),
 }
 
 impl core::fmt::Display for CliError {
@@ -26,7 +23,6 @@ impl core::fmt::Display for CliError {
             Self::Reqwest(error) => error.fmt(f),
             Self::HeaderValue(error) => error.fmt(f),
             Self::SerdeJson(error) => error.fmt(f),
-            Self::ParseFloat(error) => error.fmt(f),
         }
     }
 }
@@ -72,12 +68,5 @@ impl From<serde_json::Error> for CliError {
     #[inline]
     fn from(value: serde_json::Error) -> Self {
         Self::SerdeJson(value)
-    }
-}
-
-impl From<ParseFloatError> for CliError {
-    #[inline]
-    fn from(value: ParseFloatError) -> Self {
-        Self::ParseFloat(value)
     }
 }

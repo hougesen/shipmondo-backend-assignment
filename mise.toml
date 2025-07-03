@@ -13,3 +13,6 @@ run = [
   "cd rust-implementation && diesel migration run",
   "cd rust-implementation && diesel migration redo",
 ]
+
+[tasks.db-explore]
+run = ["rainfrog --driver sqlite --database ./rust-implementation/shipmondo.db"]
